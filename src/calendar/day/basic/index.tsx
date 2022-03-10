@@ -1,13 +1,13 @@
 import XDate from 'xdate';
 import values from 'lodash/values';
 import PropTypes from 'prop-types';
-import React, {Fragment, useCallback, useRef} from 'react';
-import {TouchableOpacity, Text, View, ViewProps} from 'react-native';
+import React, { Fragment, useCallback, useRef } from 'react';
+import { TouchableOpacity, Text, View, ViewProps } from 'react-native';
 
-import {xdateToData} from '../../../interface';
-import {Theme, DayState, MarkingTypes, DateData} from '../../../types';
+import { xdateToData } from '../../../interface';
+import { Theme, DayState, MarkingTypes, DateData } from '../../../types';
 import styleConstructor from './style';
-import Marking, {MarkingProps} from '../marking';
+import Marking, { MarkingProps } from '../marking';
 
 
 export interface BasicDayProps extends ViewProps {
@@ -23,7 +23,7 @@ export interface BasicDayProps extends ViewProps {
   /** onLongPress callback */
   onLongPress?: (date?: DateData) => void;
   /** The date to return from press callbacks */
-  date?: string;
+  date?: any;
 
   /** Disable all touch events for disabled days. can be override with disableTouchEvent in markedDates*/
   disableAllTouchEventsForDisabledDays?: boolean;
@@ -34,6 +34,10 @@ export interface BasicDayProps extends ViewProps {
   testID?: string;
   /** Accessibility label */
   accessibilityLabel?: string;
+
+  children?: any,
+  fromDate?: any,
+  toDate?: any
 }
 
 const BasicDay = (props: BasicDayProps) => {
@@ -49,21 +53,22 @@ const BasicDay = (props: BasicDayProps) => {
     disableAllTouchEventsForInactiveDays,
     accessibilityLabel,
     children,
-    testID
+    testID,
+    fromDate,
+    toDate
   } = props;
   const style = useRef(styleConstructor(theme));
   const _marking = marking || {};
   const isSelected = _marking.selected || state === 'selected';
-  const isDisabled = typeof _marking.disabled !== 'undefined' ? _marking.disabled : state === 'disabled';
+  const isSelectedBetween = state === "inactive"
+  const isDisabled = typeof _marking.disabled !== 'undefined' ? _marking.disabled : state === 'disabled' || state === "disableToday";
   const isInactive = _marking?.inactive;
-  const isToday = state === 'today';
-  const isMultiDot = markingType === Marking.markings.MULTI_DOT;
-  const isMultiPeriod = markingType === Marking.markings.MULTI_PERIOD;
+  const isToday = state === 'today' || state === "disableToday";
   const isCustom = markingType === Marking.markings.CUSTOM;
   const dateData = date ? xdateToData(new XDate(date)) : undefined;
 
   const shouldDisableTouchEvent = () => {
-    const {disableTouchEvent} = _marking;
+    const { disableTouchEvent } = _marking;
     let disableTouch = false;
 
     if (typeof disableTouchEvent === 'boolean') {
@@ -77,14 +82,16 @@ const BasicDay = (props: BasicDayProps) => {
   };
 
   const getContainerStyle = () => {
-    const {customStyles, selectedColor} = _marking;
+    const { customStyles, selectedColor } = _marking;
     const styles = [style.current.base];
 
     if (isSelected) {
       styles.push(style.current.selected);
       if (selectedColor) {
-        styles.push({backgroundColor: selectedColor});
+        styles.push({ backgroundColor: selectedColor });
       }
+    } else if (isSelectedBetween) {
+      styles.push(style.current.selectedBetween);
     } else if (isToday) {
       styles.push(style.current.today);
     }
@@ -101,13 +108,13 @@ const BasicDay = (props: BasicDayProps) => {
   };
 
   const getTextStyle = () => {
-    const {customStyles, selectedTextColor} = _marking;
+    const { customStyles, selectedTextColor } = _marking;
     const styles = [style.current.text];
 
     if (isSelected) {
       styles.push(style.current.selectedText);
       if (selectedTextColor) {
-        styles.push({color: selectedTextColor});
+        styles.push({ color: selectedTextColor });
       }
     } else if (isDisabled) {
       styles.push(style.current.disabledText);
@@ -125,6 +132,43 @@ const BasicDay = (props: BasicDayProps) => {
     return styles;
   };
 
+  const getfillersRightStyle = () => {
+    if (fromDate && toDate) {
+      const dateCurrent = new XDate(date, true).setHours(0)
+      let fromDateSelect = new XDate(fromDate, true).setHours(0)
+      let toDateSelect = new XDate(toDate, true).setHours(0)
+      if (dateCurrent >= fromDateSelect && dateCurrent < toDateSelect) {
+        return style.current.selectedBetween
+      }
+    }
+    return null
+  }
+
+  const getfillersLeftStyle = () => {
+    if (fromDate && toDate) {
+      const dateCurrent = new XDate(date, true).setHours(0)
+      let fromDateSelect = new XDate(fromDate, true).setHours(0)
+      let toDateSelect = new XDate(toDate, true).setHours(0)
+      if (dateCurrent > fromDateSelect && dateCurrent <= toDateSelect) {
+        return style.current.selectedBetween
+      }
+    }
+    return null
+  }
+
+  const getViewDisableStyle = () => {
+    const styles = []
+    if (isDisabled) {
+      styles.push(style.current.lineTextDisable);
+    }
+    return styles;
+  };
+
+  const checkDisableBtn = () => {
+    if (isDisabled) return true
+    return false
+  }
+
   const _onPress = useCallback(() => {
     onPress?.(dateData);
   }, [onPress, date]);
@@ -132,25 +176,6 @@ const BasicDay = (props: BasicDayProps) => {
   const _onLongPress = useCallback(() => {
     onLongPress?.(dateData);
   }, [onLongPress, date]);
-
-  const renderMarking = () => {
-    const {marked, dotColor, dots, periods} = _marking;
-
-    return (
-      <Marking
-        type={markingType}
-        theme={theme}
-        marked={isMultiDot ? true : marked}
-        selected={isSelected}
-        disabled={isDisabled}
-        inactive={isInactive}
-        today={isToday}
-        dotColor={dotColor}
-        dots={dots}
-        periods={periods}
-      />
-    );
-  };
 
   const renderText = () => {
     return (
@@ -163,29 +188,40 @@ const BasicDay = (props: BasicDayProps) => {
   const renderContent = () => {
     return (
       <Fragment>
+        <View style={getViewDisableStyle()} />
         {renderText()}
-        {renderMarking()}
+        {/* {renderMarking()} */}
       </Fragment>
     );
   };
 
   const renderContainer = () => {
-    const {activeOpacity} = _marking;
-
+    const { activeOpacity } = _marking;
     return (
-      <TouchableOpacity
-        testID={testID}
-        style={getContainerStyle()}
-        disabled={shouldDisableTouchEvent()}
-        activeOpacity={activeOpacity}
-        onPress={!shouldDisableTouchEvent() ? _onPress : undefined}
-        onLongPress={!shouldDisableTouchEvent() ? _onLongPress : undefined}
-        accessible
-        accessibilityRole={isDisabled ? undefined : 'button'}
-        accessibilityLabel={accessibilityLabel}
-      >
-        {isMultiPeriod ? renderText() : renderContent()}
-      </TouchableOpacity>
+      <>
+        <View style={style.current.conntainerFillter}>
+          <View
+            style={[style.current.fillter, getfillersLeftStyle()]}
+          />
+          <View
+            style={[style.current.fillter, getfillersRightStyle()]}
+          />
+        </View>
+        <TouchableOpacity
+          testID={testID}
+          style={getContainerStyle()}
+          disabled={checkDisableBtn()}
+          activeOpacity={activeOpacity}
+          onPress={!checkDisableBtn() ? _onPress : undefined}
+          onLongPress={!shouldDisableTouchEvent() ? _onLongPress : undefined}
+          accessible
+          accessibilityRole={isDisabled ? undefined : 'button'}
+          accessibilityLabel={accessibilityLabel}
+        >
+
+          {renderContent()}
+        </TouchableOpacity>
+      </>
     );
   };
 
@@ -193,12 +229,12 @@ const BasicDay = (props: BasicDayProps) => {
     return (
       <View style={style.current.container}>
         {renderContainer()}
-        {renderMarking()}
+        {/* {renderMarking()} */}
       </View>
     );
   };
 
-  return isMultiPeriod ? renderPeriodsContainer() : renderContainer();
+  return renderPeriodsContainer()
 };
 
 export default BasicDay;

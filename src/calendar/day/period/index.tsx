@@ -220,7 +220,7 @@ export default class PeriodDay extends Component<PeriodDayProps> {
     }
 
     const {theme, accessibilityLabel, testID} = this.props;
-
+    
     // TODO: refactor - allow feedback for unmarked days
     return (
       <TouchableWithoutFeedback

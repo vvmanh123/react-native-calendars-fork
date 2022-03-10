@@ -68,6 +68,7 @@ export interface CalendarHeaderProps {
   style?: StyleProp<ViewStyle>;
   accessibilityElementsHidden?: boolean;
   importantForAccessibility?: 'auto' | 'yes' | 'no' | 'no-hide-descendants';
+  titleHeaderCalendar?:any
 }
 
 const accessibilityActions = [
@@ -99,7 +100,8 @@ const CalendarHeader = forwardRef((props: CalendarHeaderProps, ref) => {
     webAriaLevel,
     testID,
     accessibilityElementsHidden,
-    importantForAccessibility
+    importantForAccessibility,
+    titleHeaderCalendar
   } = props;
   const style = useRef(styleConstructor(theme));
   
@@ -107,7 +109,7 @@ const CalendarHeader = forwardRef((props: CalendarHeaderProps, ref) => {
     onPressLeft,
     onPressRight
   }));
-
+  
   const addMonth = useCallback(() => {
     propsAddMonth?.(1);
   }, [propsAddMonth]);
@@ -144,9 +146,9 @@ const CalendarHeader = forwardRef((props: CalendarHeaderProps, ref) => {
   };
 
   const renderWeekDays = useMemo(() => {
-    const weekDaysNames = weekDayNames(firstDay);
+    // const weekDaysNames = weekDayNames(firstDay);
 
-    return weekDaysNames.map((day: string, index: number) => {
+    return titleHeaderCalendar.map((day: string, index: number) => {
       const dayStyle = [style.current.dayHeader];
 
       if (includes(disabledDaysIndexes, index)) {

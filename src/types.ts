@@ -1,7 +1,7 @@
-import {ViewStyle, TextStyle, StyleProp} from 'react-native';
+import { ViewStyle, TextStyle, StyleProp } from 'react-native';
 
 export type MarkingTypes = 'dot' | 'multi-dot' | 'period' | 'multi-period' | 'custom';
-export type DayState = 'selected' | 'disabled' | 'inactive' | 'today' | '';
+export type DayState = 'selected' | 'disabled' | 'inactive' | 'today' | 'disableToday' | '';
 export type Direction = 'left' | 'right';
 export type DateData = {
   year: number;
@@ -28,13 +28,13 @@ export interface Theme {
   calendarBackground?: string;
   indicatorColor?: string;
   stylesheet?: {
-    calendar?: {main?: object; header?: object};
-    day?: {basic?: object; period?: object};
+    calendar?: { main?: object; header?: object };
+    day?: { basic?: object; period?: object };
     dot?: object;
     marking?: object;
-    'calendar-list'?: {main?: object};
-    agenda?: {main?: object; list?: object};
-    expandable?: {main?: object};
+    'calendar-list'?: { main?: object };
+    agenda?: { main?: object; list?: object };
+    expandable?: { main?: object };
   };
   textSectionTitleColor?: string;
   textSectionTitleDisabledColor?: string;

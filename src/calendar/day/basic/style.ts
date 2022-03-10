@@ -1,10 +1,10 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 import * as defaultStyle from '../../../style';
-import {Theme} from '../../../types';
+import { Theme } from '../../../types';
 import constants from '../../../commons/constants';
 
 export default function styleConstructor(theme: Theme = {}) {
-  const appStyle = {...defaultStyle, ...theme};
+  const appStyle = { ...defaultStyle, ...theme };
   return StyleSheet.create({
     container: {
       alignSelf: 'stretch',
@@ -15,11 +15,20 @@ export default function styleConstructor(theme: Theme = {}) {
       height: 32,
       alignItems: 'center'
     },
+    conntainerFillter: {
+      position: "absolute",
+      width: "100%",
+      height: "100%",
+      flexDirection: "row"
+    },
+    fillter: {
+      flex: 1,
+    },
     text: {
       marginTop: constants.isAndroid ? 4 : 6,
       fontSize: appStyle.textDayFontSize,
-      fontFamily: appStyle.textDayFontFamily,
-      fontWeight: appStyle.textDayFontWeight,
+      fontFamily: "Rubik-Regular",
+      fontWeight: "400",
       color: appStyle.dayTextColor,
       backgroundColor: 'rgba(255, 255, 255, 0)',
       ...appStyle.textDayStyle
@@ -28,21 +37,32 @@ export default function styleConstructor(theme: Theme = {}) {
       marginTop: constants.isAndroid ? 4 : 6
     },
     selected: {
-      backgroundColor: appStyle.selectedDayBackgroundColor,
-      borderRadius: 16
+      backgroundColor: "#00ADB2",
+      borderRadius: 5
+    },
+    selectedBetween: {
+      backgroundColor: "#E5F7F7"
     },
     today: {
-      backgroundColor: appStyle.todayBackgroundColor,
-      borderRadius: 16
+      borderWidth: 1,
+      borderColor: "#00ADB2",
+      borderRadius: 5,
     },
     todayText: {
-      color: appStyle.todayTextColor
+      color: "#00ADB2"
     },
     selectedText: {
-      color: appStyle.selectedDayTextColor
+      color: "#FFFFFF"
     },
     disabledText: {
-      color: appStyle.textDisabledColor
+      color: "#7B8687"
+    },
+    lineTextDisable: {
+      position: "absolute",
+      width: "70%",
+      height: 1,
+      backgroundColor: "#7B8687",
+      top: "50%"
     },
     inactiveText: {
       color: appStyle.textInactiveColor

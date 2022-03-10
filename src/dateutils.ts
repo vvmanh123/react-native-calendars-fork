@@ -1,6 +1,6 @@
 const XDate = require('xdate');
-const {parseDate, toMarkingFormat} = require('./interface');
-const {getDefaultLocale} = require('./services');
+const { parseDate, toMarkingFormat } = require('./interface');
+const { getDefaultLocale } = require('./services');
 
 const latinNumbersPattern = /[0-9]/g;
 
@@ -21,7 +21,7 @@ export function sameDate(a?: XDate, b?: XDate) {
     return false;
   } else {
     return a?.getFullYear() === b?.getFullYear() && a?.getMonth() === b?.getMonth() && a?.getDate() === b?.getDate();
-  } 
+  }
 }
 
 export function sameWeek(a: string, b: string, firstDayOfWeek: number) {
@@ -96,45 +96,78 @@ export function weekDayNames(firstDayOfWeek = 0) {
   }
   return weekDaysNames;
 }
+/**Func default */
+// export function page(date: XDate, firstDayOfWeek = 0, showSixWeeks = false) {
+
+//   const days = month(date);
+//   let before: XDate[] = [];
+//   let after: XDate[] = [];
+
+//   const fdow = (7 + firstDayOfWeek) % 7 || 7;
+//   const ldow = (fdow + 6) % 7;
+
+//   firstDayOfWeek = firstDayOfWeek || 0;
+
+//   const from = days[0].clone();
+
+//   const daysBefore = from.getDay();
+
+//   if (from.getDay() !== fdow) {
+//     from.addDays(-(from.getDay() + 7 - fdow) % 7);
+//   }
+
+//   const to = days[days.length - 1].clone();
+//   const day = to.getDay();
+
+//   if (day !== ldow) {
+//     to.addDays((ldow + 7 - day) % 7);
+//   }
+
+//   const daysForSixWeeks = (daysBefore + days.length) / 6 >= 6;
+
+//   if (showSixWeeks && !daysForSixWeeks) {
+//     to.addDays(7);
+//   }
+
+//   if (isLTE(from, days[0])) {
+//     before = fromTo(from, days[0]);
+//   }
+
+//   if (isGTE(to, days[days.length - 1])) {
+//     after = fromTo(days[days.length - 1], to);
+//   }
+
+//   return before.concat(days.slice(1, days.length - 1), after);
+// }
 
 export function page(date: XDate, firstDayOfWeek = 0, showSixWeeks = false) {
-  const days = month(date);
-  let before: XDate[] = [];
-  let after: XDate[] = [];
 
-  const fdow = (7 + firstDayOfWeek) % 7 || 7;
-  const ldow = (fdow + 6) % 7;
+  const days = month(date);
+
+  let daysFormate: any = days
 
   firstDayOfWeek = firstDayOfWeek || 0;
 
   const from = days[0].clone();
-  const daysBefore = from.getDay();
 
-  if (from.getDay() !== fdow) {
-    from.addDays(-(from.getDay() + 7 - fdow) % 7);
+  if (from.getDay() > 0) {
+    //Add null on list day
+    for (let index = 0; index < from.getDay(); index++) {
+      daysFormate = [null, ...daysFormate]
+    }
   }
 
   const to = days[days.length - 1].clone();
   const day = to.getDay();
-  if (day !== ldow) {
-    to.addDays((ldow + 7 - day) % 7);
+
+  if (day < 7) {
+    //Add null on list day
+    let length = 7 - day
+    for (let index = 0; index < length; index++) {
+      daysFormate = [...daysFormate, null]
+    }
   }
-
-  const daysForSixWeeks = (daysBefore + days.length) / 6 >= 6;
-
-  if (showSixWeeks && !daysForSixWeeks) {
-    to.addDays(7);
-  }
-
-  if (isLTE(from, days[0])) {
-    before = fromTo(from, days[0]);
-  }
-
-  if (isGTE(to, days[days.length - 1])) {
-    after = fromTo(days[days.length - 1], to);
-  }
-
-  return before.concat(days.slice(1, days.length - 1), after);
+  return daysFormate
 }
 
 export function isDateNotInTheRange(minDate: XDate, maxDate: XDate, date: XDate) {

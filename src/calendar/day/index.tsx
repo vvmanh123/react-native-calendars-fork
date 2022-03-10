@@ -1,23 +1,23 @@
 import PropTypes from 'prop-types';
 import XDate from 'xdate';
-import React, {useMemo} from 'react';
+import React, { useMemo } from 'react';
 
-import {formatNumbers, isToday} from '../../dateutils';
-import {getDefaultLocale} from '../../services';
+import { formatNumbers, isToday } from '../../dateutils';
+import { getDefaultLocale } from '../../services';
 // @ts-expect-error
-import {SELECT_DATE_SLOT} from '../../testIDs';
-import {DateData} from '../../types';
-import BasicDay, {BasicDayProps} from './basic';
+import { SELECT_DATE_SLOT } from '../../testIDs';
+import { DateData } from '../../types';
+import BasicDay, { BasicDayProps } from './basic';
 import PeriodDay from './period';
 
 
 export interface DayProps extends BasicDayProps {
   /** Provide custom day rendering component */
-  dayComponent?: React.ComponentType<DayProps & {date?: DateData}>;
+  dayComponent?: React.ComponentType<DayProps & { date?: DateData }>;
 }
 
 const Day = React.memo((props: DayProps) => {
-  const {date, marking, dayComponent, markingType} = props;
+  const { date, marking, dayComponent, markingType } = props;
   const _date = date ? new XDate(date) : undefined;
   const _isToday = isToday(_date);
 
@@ -56,7 +56,7 @@ const Day = React.memo((props: DayProps) => {
 
     return `${_isToday ? today : ''} ${_date?.toString(formatAccessibilityLabel)} ${markingAccessibilityLabel}`;
   }, [_date, marking, _isToday]);
-  
+
   const Component = dayComponent || markingType === 'period' ? PeriodDay : BasicDay;
 
   return (

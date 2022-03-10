@@ -18,7 +18,7 @@ export default function (theme: Theme = {}) {
     },
     monthText: {
       fontSize: appStyle.textMonthFontSize,
-      fontFamily: appStyle.textMonthFontFamily,
+      fontFamily: "Rubik-Regular",
       fontWeight: appStyle.textMonthFontWeight,
       color: appStyle.monthTextColor,
       margin: 10
@@ -51,9 +51,9 @@ export default function (theme: Theme = {}) {
       width: 32,
       textAlign: 'center',
       fontSize: appStyle.textDayHeaderFontSize,
-      fontFamily: appStyle.textDayHeaderFontFamily,
-      fontWeight: appStyle.textDayHeaderFontWeight,
-      color: appStyle.textSectionTitleColor
+      fontFamily: "Rubik-Regular",
+      fontWeight: "500",
+      color: "#7B8687"
     },
     disabledDayHeader: {
       color: appStyle.textSectionTitleDisabledColor
