@@ -35,14 +35,9 @@ export function getState(day: XDate, current: XDate, props: any) {
   }
 
   if (weekdayClose) {
-    const checkWeekday = weekdayClose.filter((i: any) => i?.weekday === weekday)?.length
-    if (checkWeekday > 0) {
-      if (isToday(day)) {
-        state = 'disableToday';
-      } else {
-        state = 'disabled';
-      }
-
+    if (weekdayClose[weekday]) {
+      if (isToday(day)) state = "disableToday"
+      else state = "disabled";
     }
   }
 
