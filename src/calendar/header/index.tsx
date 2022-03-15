@@ -13,7 +13,9 @@ import {
   StyleProp,
   ViewStyle,
   AccessibilityActionEvent,
-  ColorValue
+  ColorValue,
+  ImageStyle,
+  TextStyle
 } from 'react-native';
 import { formatNumbers, weekDayNames } from '../../dateutils';
 import {
@@ -68,7 +70,10 @@ export interface CalendarHeaderProps {
   style?: StyleProp<ViewStyle>;
   accessibilityElementsHidden?: boolean;
   importantForAccessibility?: 'auto' | 'yes' | 'no' | 'no-hide-descendants';
-  titleHeaderCalendar?: any
+  titleHeaderCalendar?: any;
+  onChangeMonth?: any,
+  icStyle?: ImageStyle,
+  txtStyle?: TextStyle
 }
 
 const accessibilityActions = [
@@ -101,7 +106,10 @@ const CalendarHeader = forwardRef((props: CalendarHeaderProps, ref) => {
     testID,
     accessibilityElementsHidden,
     importantForAccessibility,
-    titleHeaderCalendar
+    titleHeaderCalendar,
+    onChangeMonth,
+    icStyle,
+    txtStyle
   } = props;
   const style = useRef(styleConstructor(theme));
 
@@ -119,13 +127,16 @@ const CalendarHeader = forwardRef((props: CalendarHeaderProps, ref) => {
   }, [propsAddMonth]);
 
   const onPressLeft = useCallback(() => {
+    onChangeMonth && onChangeMonth("left")
     if (typeof onPressArrowLeft === 'function') {
       return onPressArrowLeft(subtractMonth, month);
     }
+    onChangeMonth && onChangeMonth("left")
     return subtractMonth();
   }, [onPressArrowLeft, subtractMonth, month]);
 
   const onPressRight = useCallback(() => {
+    onChangeMonth && onChangeMonth("right")
     if (typeof onPressArrowRight === 'function') {
       return onPressArrowRight(addMonth, month);
     }
@@ -162,7 +173,7 @@ const CalendarHeader = forwardRef((props: CalendarHeaderProps, ref) => {
         }
 
         return (
-          <Text allowFontScaling={false} key={index} style={dayStyle} numberOfLines={1} accessibilityLabel={''}>
+          <Text allowFontScaling={false} key={index} style={[dayStyle, txtStyle && txtStyle]} numberOfLines={1} accessibilityLabel={''}>
             {day}
           </Text>
         );
@@ -208,7 +219,7 @@ const CalendarHeader = forwardRef((props: CalendarHeaderProps, ref) => {
       <Fragment>
         <Text
           allowFontScaling={false}
-          style={style.current.monthText}
+          style={[style.current.monthText, txtStyle && txtStyle]}
           testID={testID ? `${HEADER_MONTH_NAME}-${testID}` : HEADER_MONTH_NAME}
           {...webProps}
         >
@@ -243,7 +254,7 @@ const CalendarHeader = forwardRef((props: CalendarHeaderProps, ref) => {
           renderArrow(renderArrowDirection)
         ) : (
           // @ts-expect-error style?: StyleProp<ImageStyle>
-          <Image source={imageSource} style={shouldDisable ? style.current.disabledArrowImage : style.current.arrowImage} />
+          <Image source={imageSource} style={[shouldDisable ? style.current.disabledArrowImage : style.current.arrowImage, icStyle && icStyle]} />
         )}
       </TouchableOpacity>
     );

@@ -39,6 +39,12 @@ export default function (theme: Theme = {}) {
     disabledArrowImage: {
       tintColor: appStyle.disabledArrowColor
     },
+    colorIcon:{
+      tintColor:"#FFFFFF"
+    },
+    txtWhite:{
+      color:"#FFFFFF"
+    },
     // @ts-expect-error
     week: {
       marginTop: 7,

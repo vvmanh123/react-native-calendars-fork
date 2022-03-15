@@ -3,7 +3,7 @@ import XDate from 'xdate';
 import memoize from 'memoize-one';
 
 import React, { Component } from 'react';
-import { View, ViewStyle, StyleProp } from 'react-native';
+import { View, ViewStyle, StyleProp, TextStyle, ImageStyle } from 'react-native';
 // @ts-expect-error
 import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
 
@@ -80,6 +80,14 @@ export interface CalendarProps extends CalendarHeaderProps, DayProps {
   fromDate?: string
   /**To date select */
   toDate?: string
+  /**Type swipe month */
+  onChangeMonth?: (type: string) => void
+  /**stype icon */
+  icStyle?: ImageStyle
+  /**stype content */
+  contentStyle?: ViewStyle
+  /**text stype */
+  txtStyle?: TextStyle
 }
 
 interface State {
@@ -123,7 +131,11 @@ class Calendar extends Component<CalendarProps, State> {
     dayClose: PropTypes.any,
     titleHeaderCalendar: PropTypes.any,
     fromDate: PropTypes.any,
-    toDate: PropTypes.any
+    toDate: PropTypes.any,
+    onChangeMonth: PropTypes.any,
+    icStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.number, PropTypes.array]),
+    contentStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.number, PropTypes.array]),
+    txtStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.number, PropTypes.array]),
   };
   static defaultProps = {
     enableSwipeMonths: false
@@ -232,7 +244,7 @@ class Calendar extends Component<CalendarProps, State> {
   });
 
   renderDay(day: XDate, id: number) {
-    const { hideExtraDays, markedDates, fromDate, toDate } = this.props;
+    const { hideExtraDays, markedDates, fromDate, toDate, txtStyle } = this.props;
     const dayProps = extractComponentProps(Day, this.props);
 
     if (!sameMonth(day, this.state.currentMonth) && hideExtraDays) {
@@ -252,6 +264,7 @@ class Calendar extends Component<CalendarProps, State> {
             onLongPress={this.longPressDay}
             fromDate={fromDate}
             toDate={toDate}
+            txtStyle={txtStyle}
           />
         }
 
@@ -279,7 +292,7 @@ class Calendar extends Component<CalendarProps, State> {
 
   renderMonth() {
     const { currentMonth } = this.state;
-    const { showSixWeeks, hideExtraDays } = this.props;
+    const { showSixWeeks, hideExtraDays, contentStyle } = this.props;
     const shouldShowSixWeeks = showSixWeeks && !hideExtraDays;
     const days = page(currentMonth, 0, shouldShowSixWeeks);
     const weeks = [];
@@ -288,11 +301,11 @@ class Calendar extends Component<CalendarProps, State> {
       weeks.push(this.renderWeek(days.splice(0, 7), weeks.length));
     }
 
-    return <View style={this.style.monthView}>{weeks}</View>;
+    return <View style={[this.style.monthView, contentStyle && contentStyle]}>{weeks}</View>;
   }
 
   renderHeader() {
-    const { customHeader, headerStyle, displayLoadingIndicator, markedDates, testID, titleHeaderCalendar } = this.props;
+    const { customHeader, headerStyle, displayLoadingIndicator, markedDates, testID, titleHeaderCalendar, icStyle, txtStyle, onChangeMonth } = this.props;
     let indicator;
 
     if (this.state.currentMonth) {
@@ -317,12 +330,15 @@ class Calendar extends Component<CalendarProps, State> {
         addMonth={this.addMonth}
         displayLoadingIndicator={indicator}
         titleHeaderCalendar={titleHeaderCalendar}
+        onChangeMonth={onChangeMonth}
+        icStyle={icStyle}
+        txtStyle={txtStyle}
       />
     );
   }
 
   render() {
-    const { enableSwipeMonths, style, weekdayClose, dayClose } = this.props;
+    const { enableSwipeMonths, style } = this.props;
     const GestureComponent = enableSwipeMonths ? GestureRecognizer : View;
     const gestureProps = enableSwipeMonths ? this.swipeProps : undefined;
 

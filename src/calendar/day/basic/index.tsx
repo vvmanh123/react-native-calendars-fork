@@ -2,7 +2,7 @@ import XDate from 'xdate';
 import values from 'lodash/values';
 import PropTypes from 'prop-types';
 import React, { Fragment, useCallback, useRef } from 'react';
-import { TouchableOpacity, Text, View, ViewProps } from 'react-native';
+import { TouchableOpacity, Text, View, ViewProps, ViewStyle } from 'react-native';
 
 import { xdateToData } from '../../../interface';
 import { Theme, DayState, MarkingTypes, DateData } from '../../../types';
@@ -37,7 +37,8 @@ export interface BasicDayProps extends ViewProps {
 
   children?: any,
   fromDate?: any,
-  toDate?: any
+  toDate?: any,
+  txtStyle?: ViewStyle
 }
 
 const BasicDay = (props: BasicDayProps) => {
@@ -55,7 +56,8 @@ const BasicDay = (props: BasicDayProps) => {
     children,
     testID,
     fromDate,
-    toDate
+    toDate,
+    txtStyle
   } = props;
   const style = useRef(styleConstructor(theme));
   const _marking = marking || {};
@@ -109,15 +111,16 @@ const BasicDay = (props: BasicDayProps) => {
 
   const getTextStyle = () => {
     const { customStyles, selectedTextColor } = _marking;
-    const styles = [style.current.text];
+    const styles = [style.current.text, txtStyle && txtStyle];
 
     if (isSelected) {
       styles.push(style.current.selectedText);
       if (selectedTextColor) {
-        styles.push({ color: selectedTextColor });
+        styles.push({ color: selectedTextColor })
       }
     } else if (isDisabled) {
       styles.push(style.current.disabledText);
+      txtStyle && styles.push(txtStyle);
     } else if (isToday) {
       styles.push(style.current.todayText);
     } else if (isInactive) {
@@ -159,7 +162,7 @@ const BasicDay = (props: BasicDayProps) => {
   const getViewDisableStyle = () => {
     const styles = []
     if (isDisabled) {
-      styles.push(style.current.lineTextDisable);
+      styles.push([style.current.lineTextDisable, txtStyle && { backgroundColor: "#FFFFFF" }]);
     }
     return styles;
   };
