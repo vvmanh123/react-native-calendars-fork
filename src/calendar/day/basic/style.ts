@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 import * as defaultStyle from '../../../style';
 import { Theme } from '../../../types';
 import constants from '../../../commons/constants';
@@ -31,6 +31,7 @@ export default function styleConstructor(theme: Theme = {}) {
       fontWeight: "400",
       color: appStyle.dayTextColor,
       backgroundColor: 'rgba(255, 255, 255, 0)',
+      paddingTop: Platform.OS === "android" ? 3 : 0,
       ...appStyle.textDayStyle
     },
     alignedText: {
