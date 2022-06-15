@@ -1,6 +1,6 @@
 {
   "name": "react-native-calendars-fork",
-  "version": "1.22.0",
+  "version": "1.3.0",
   "main": "src/index.ts",
   "types": "src/index.d.ts",
   "description": "React Native Calendar Components",
